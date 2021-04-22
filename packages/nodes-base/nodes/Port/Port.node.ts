@@ -1,5 +1,6 @@
 import {
     IExecuteFunctions,
+    ILoadOptionsFunctions,
 } from 'n8n-core';
 
 import {
@@ -7,6 +8,7 @@ import {
     INodeType,
     INodeTypeDescription,
     IDataObject,
+    INodePropertyOptions,
 } from 'n8n-workflow';
 
 import { 
@@ -29,6 +31,7 @@ import {
     interactionFields,
     interactionOperations
 } from './InteractionDescription';
+
 
 export class Port implements INodeType {
     description: INodeTypeDescription = {
@@ -64,7 +67,11 @@ export class Port implements INodeType {
             {
                 displayName: 'Tenant URI',
                 name: 'tenantUri',
-                type: 'string',
+                type: 'options',
+                typeOptions: {
+                    loadOptionsMethod: 'getTenantUri',
+                },
+                options: [],
                 required: true,
                 default: '',
                 description: 'URI of a Port tenant',
@@ -95,6 +102,21 @@ export class Port implements INodeType {
             ...interactionFields                            
         ],
     };
+
+    methods = {
+        loadOptions: {
+            async getTenantUri(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]>{
+                const returnData: INodePropertyOptions[] = [];
+
+                let TenantURI = await portApiRequest.call(this, 'GET', 'accounts/my');
+                returnData.push({
+                    name: TenantURI.companyuri,
+                    value:TenantURI.companyuri
+                });
+                return returnData;
+            }
+        }
+    }
 
     async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
         const items = this.getInputData();
