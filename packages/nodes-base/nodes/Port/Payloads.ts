@@ -36,8 +36,12 @@ export function searchMemberPayload(tenantUri : string, dataSource: string, memb
         }
     };
 }
-
-export function getAllMembersPayload(tenantUri: string, page: number, pageSize: number, communityStatus: number[], engagementRating?: string[]){
+//@TODO refactor
+export function getAllMembersPayload(tenantUri: string, 
+                                     page: number, 
+                                     pageSize: number, 
+                                     communityStatus: number[], 
+                                     engagementRating?: string[]){
 
     let engagementRatingString;
     if(typeof engagementRating !== 'undefined'){
@@ -133,22 +137,23 @@ export function createMemberPayload(memberUri: string,
     return payload;
 }
 
-export function createInteractionPayload(interactionType: string, uri:string, link: string, description: string, eventId: string, postTitle: string, postBody: string){
+export function createInteractionPayload(interactionType: string,                                          
+                                         description: string, 
+                                         uri:string = 'interaction', 
+                                         link?: string,                                          
+                                         postTitle?: string, 
+                                         postBody?: string){
     const interactionDict: { [key : string]: number} = {
         "engagement" : 8,
         "activity" : 9,
         "note" :4
-    };       
-    
-    return {
+    };  
+   
+    let payload:any = {
         "type": interactionDict[interactionType],
         "uri": uri,
         "data": {
-            "string_event_id": eventId,
-            "link": link,
             "description": description,
-            "post_title": postTitle,
-            "post_body" : postBody,
             "scores": [
                 {
                     "name": "relevance",
@@ -157,5 +162,18 @@ export function createInteractionPayload(interactionType: string, uri:string, li
                 }
             ]
         }
+    };
+
+    if(link){
+        payload.link = link;
     }
+    if(postTitle){
+        payload.post_title = postTitle;
+    }
+    if(postBody){
+        payload.post_body = postBody;
+    }
+    
+    console.log(JSON.stringify(payload));
+    return payload;
 }

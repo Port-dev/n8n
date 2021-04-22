@@ -47,10 +47,29 @@ export const interactionFields = [
             {
                 name: 'Engagement',
                 value: 'engagement',
-                description: 'Engagement'
+                description: 'Engagement',
             },
+            {
+                name: 'Note',
+                value: 'note',
+                description: 'Note',
+            }
         ],
         default: 'activity',
-        description: 'Type of interaction'
+        description: 'Type of interaction',
+    },
+    {
+        displayName: 'Description',
+        name: 'interactionDescription',
+        type: 'string',
+        displayOptions: {
+            show: {
+                resource: [
+                    'interaction',
+                ]
+            },
+        },
+        required: true, 
+        description: 'The description of the interaction',        
     },
 ] as INodeProperties[];

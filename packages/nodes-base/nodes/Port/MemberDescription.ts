@@ -48,6 +48,7 @@ export const memberFields = [
             show: {
                 resource: [
                     'member',
+                    'interaction'
                 ],
                 operation: [
                     'search',

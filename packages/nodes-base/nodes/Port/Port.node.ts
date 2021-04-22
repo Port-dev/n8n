@@ -17,6 +17,7 @@ import {
     searchMemberPayload, 
     createMemberPayload,
     getAllMembersPayload,    
+    createInteractionPayload,
 } from './Payloads';
 
 import {
@@ -106,9 +107,9 @@ export class Port implements INodeType {
         for (let i = 0; i < length; i++) {
             if (resource === 'member') {
                 if (operation === "getAll") {                
-                    const returnAll = this.getNodeParameter('returnAll', 0) as boolean;
-                    const communityStatus = this.getNodeParameter('communityStatus', 0) as number[];
-                    const engagementRating = this.getNodeParameter('engagementRating', 0) as string[];
+                    const returnAll = this.getNodeParameter('returnAll', i) as boolean;
+                    const communityStatus = this.getNodeParameter('communityStatus', i) as number[];
+                    const engagementRating = this.getNodeParameter('engagementRating', i) as string[];
 
                     const returnData: IDataObject[] = [];
                     const pageSize = 50;
@@ -122,7 +123,7 @@ export class Port implements INodeType {
                     if(returnAll){
                         numberEntries = totalMembers;
                     }else{
-                        const limit = this.getNodeParameter('limit', 0) as number;
+                        const limit = this.getNodeParameter('limit', i) as number;
                         numberEntries = limit;
                     }                
                     let pagesToFetch = Math.ceil(numberEntries/pageSize);
@@ -140,14 +141,14 @@ export class Port implements INodeType {
                     responseData = returnData;
                 }
                 if (operation === 'search') {
-                    const dataSource = this.getNodeParameter('dataSource', 0) as string;
-                    const memberName = this.getNodeParameter('memberName', 0) as string;                
+                    const dataSource = this.getNodeParameter('dataSource', i) as string;
+                    const memberName = this.getNodeParameter('memberName', i) as string;                
                     let payload = searchMemberPayload(tenantUri, dataSource, memberName);
                     responseData = await portApiRequest.call(this, 'POST', 'search/member', payload);
                 }
                 if(operation === 'create'){
-                    const dataSource = this.getNodeParameter('dataSource', 0) as string;
-                    const memberName = this.getNodeParameter('memberName', 0) as string;
+                    const dataSource = this.getNodeParameter('dataSource', i) as string;
+                    const memberName = this.getNodeParameter('memberName', i) as string;
                     let payload = createMemberPayload(memberName,dataSource);
                     responseData = await portApiRequest.call(this, 'POST', `documents/integration-member/${tenantUri}`, payload);                   
                 }
@@ -155,9 +156,11 @@ export class Port implements INodeType {
             if (resource === 'interaction') {
                 if (operation === 'create') {
                     //Auth in Port API with given creds
-                    const memberName = this.getNodeParameter('memberName', 0) as string;                
-                    //let payload = createInteraction()
-                    //responseData = await portApiRequest.call(this, 'POST', `api/v2/documents/${tenantUri}?create_relationship_type=interaction%20of%20member&relationship_to_uri=${tenantUri}/${memberName}>`, payload);                
+                    const memberName = this.getNodeParameter('memberName', i) as string; 
+                    const interactionType = this.getNodeParameter('interactionType', i) as string;
+                    const interactionDescription = this.getNodeParameter('interactionDescription', i) as string;
+                    let payload = createInteractionPayload(interactionType, interactionDescription, "interaction");
+                    responseData = await portApiRequest.call(this, 'POST', `documents/${tenantUri}?create_relationship_type=interaction%20of%20member&relationship_to_uri=${tenantUri}/${memberName}`, payload);                
                 }
             }
             if (Array.isArray(responseData)) {
