@@ -176,12 +176,14 @@ export class Port implements INodeType {
                 }
             }
             if (resource === 'interaction') {
-                if (operation === 'create') {
-                    //Auth in Port API with given creds
+                if (operation === 'create') {                    
                     const memberName = this.getNodeParameter('memberName', i) as string; 
                     const interactionType = this.getNodeParameter('interactionType', i) as string;
+                    const scoreName = this.getNodeParameter('scoreName', i) as string;
+                    const scoreValue = this.getNodeParameter('scoreValue', i) as number;
+                    const scoreSize = this.getNodeParameter('scoreSize', i) as string;
                     const interactionDescription = this.getNodeParameter('interactionDescription', i) as string;
-                    let payload = createInteractionPayload(interactionType, interactionDescription, "interaction");
+                    let payload = createInteractionPayload(interactionType, interactionDescription, scoreName, scoreValue, scoreSize, "interaction");
                     responseData = await portApiRequest.call(this, 'POST', `documents/${tenantUri}?create_relationship_type=interaction%20of%20member&relationship_to_uri=${tenantUri}/${memberName}`, payload);                
                 }
             }

@@ -139,6 +139,9 @@ export function createMemberPayload(memberUri: string,
 
 export function createInteractionPayload(interactionType: string,                                          
                                          description: string, 
+                                         scoreName: string,
+                                         scoreValue: number,
+                                         scoreSize: string,
                                          uri:string = 'interaction', 
                                          link?: string,                                          
                                          postTitle?: string, 
@@ -156,9 +159,9 @@ export function createInteractionPayload(interactionType: string,
             "description": description,
             "scores": [
                 {
-                    "name": "relevance",
-                    "original_value": 5,
-                    "size": "S"
+                    "name": scoreName,
+                    "original_value": scoreValue,
+                    "size": scoreSize,
                 }
             ]
         }
