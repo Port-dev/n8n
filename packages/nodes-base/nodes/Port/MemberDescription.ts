@@ -70,8 +70,7 @@ export const memberFields = [
                     'member',
                 ],
                 operation: [
-                    'search',
-                    'create'
+                    'search'
                 ],
             },
         },
@@ -252,17 +251,35 @@ export const memberFields = [
         },
         options: [
             {
+                displayName: 'Language',
+                name: 'language',
+                type: 'string',
+                default: '',
+            },            
+            {
                 displayName: 'Biography',
-                name: 'Biography',
+                name: 'bio',
                 type: 'string',
                 default: '',
             },
             {
-                displayName: 'Creation date',
-                name: 'creationDate',
-                type: 'dateTime',
+                displayName: 'Description',
+                name: 'description',
+                type: 'string',
+                default: '',
+            },            
+            {
+                displayName: 'Position',
+                name: 'position',
+                type: 'string',
                 default: '',
             },
+            {
+                displayName: 'Organization',
+                name: 'organization',
+                type: 'string',
+                default: '',
+            },                                    
             {
                 displayName: 'Full name',
                 name: 'fullName',
@@ -270,20 +287,14 @@ export const memberFields = [
                 default: ''
             },
             {
-                displayName: 'Image URL',
-                name: 'imageUrl',
+                displayName: 'Display name',
+                name: 'displayName',
                 type: 'string',
-                default: ''
-            },
+                default: '',
+            },            
             {
                 displayName: 'City',
                 name: 'city',
-                type: 'string',
-                default: ''
-            },
-            {
-                displayName: 'Profile URL',
-                name: 'profileUrl',
                 type: 'string',
                 default: ''
             },
@@ -292,7 +303,37 @@ export const memberFields = [
                 name: 'website',
                 type: 'string',
                 default: ''
-            }
+            },
+            {
+                displayName: 'Tags',
+                name: 'tags',
+                type: 'string',
+                default: '',
+            },
+            {
+                displayName: 'Discourse profile',
+                name: 'discourseProfile',
+                type: 'string',
+                default: '',
+            },
+            {
+                displayName: 'Twitter profile',
+                name: 'twitterProfile',
+                type: 'string',
+                default: '',
+            },
+            {
+                displayName: 'Github profile',
+                name: 'githubProfile',
+                type: 'string',
+                default: '',
+            },
+            {
+                displayName: 'StackOverflow profile',
+                name: 'stackoverflowProfile',
+                type: 'string',
+                default: '',
+            },                                                            
         ],
     },
 ] as INodeProperties[];

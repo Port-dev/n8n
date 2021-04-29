@@ -168,11 +168,11 @@ export class Port implements INodeType {
                     let payload = searchMemberPayload(tenantUri, dataSource, memberName);
                     responseData = await portApiRequest.call(this, 'POST', 'search/member', payload);
                 }
-                if(operation === 'create'){
-                    const dataSource = this.getNodeParameter('dataSource', i) as string;
+                if(operation === 'create'){                    
                     const memberName = this.getNodeParameter('memberName', i) as string;
-                    let payload = createMemberPayload(memberName,dataSource);
-                    responseData = await portApiRequest.call(this, 'POST', `documents/integration-member/${tenantUri}`, payload);                   
+                    const additionalFields = this.getNodeParameter('additionalFields', i) as IDataObject;
+                    let payload = createMemberPayload(memberName, additionalFields);
+                    responseData = await portApiRequest.call(this, 'POST', `documents/member/${tenantUri}`, payload);                   
                 }
             }
             if (resource === 'interaction') {

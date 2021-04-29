@@ -1,3 +1,6 @@
+import { id } from "rhea";
+import { addAdditionalFields } from "../Telegram/GenericFunctions";
+
 export function searchMemberPayload(tenantUri : string, dataSource: string, member: string) {
     return {
         "filters": [
@@ -97,43 +100,91 @@ export function getAllMembersPayload(tenantUri: string,
 }
 
 
-export function createMemberPayload(memberUri: string, 
-                                    sourceName: string, 
-                                    bio?: string,
-                                    creationDate?: Date,
-                                    fullName?: string,
-                                    imageUrl?: string,
-                                    city?: string,
-                                    profileUrl?: string,
-                                    website?: string,
-                                    additionalData : any = {}){
-    let payload = JSON.parse(`
-    {
-        "type": 6,
-         "uri": "${memberUri}",
-         "data": {
-           "sources": {
-             "${sourceName}" : { 
-               "items": [
-                 {
-                   "bio": "${bio}",
-                   "created_date": "${creationDate}",
-                   "display_name": "${memberUri}",
-                   "full_name": "${fullName}",
-                   "image_url": "${imageUrl}",
-                   "location": {
-                     "city": "${city}"
-                   },
-                   "profile_url": "${profileUrl}",
-                   "string_user_id": "abc", 
-                   "website": "${website}"
-                 }
-               ]
-             }
+export function createMemberPayload(memberUri: string, additionalFields: any){    
+
+    let language = additionalFields.language;
+    let bio = additionalFields.bio;
+    let description = additionalFields.description;
+    let position = additionalFields.position;
+    let organization = additionalFields.organization;
+    let fullName = additionalFields.fullName;
+    let displayName = additionalFields.displayName;
+    let city = additionalFields.city;
+    let website = additionalFields.website;
+    let tags = additionalFields.tags;
+    let discourseProfile = additionalFields.discourseProfile;
+    let twitterProfile = additionalFields.twitterProfile;
+    let githubProfile = additionalFields.githubProfile;
+    let stackoverflowProfile = additionalFields.stackoverflowProfile;
+
+    let payload:any = {
+        "type":6,
+        "uri": memberUri,
+        "data":{
+           "sources":{
+              "discourse":{
+                 "items":[
+                    {
+                       "profile_url": (discourseProfile)? discourseProfile : "",
+                    }
+                 ]
+              },
+              "twitter":{
+                 "items":[
+                    {
+                       "string_user_id": (twitterProfile)? twitterProfile : "",
+                    }
+                 ]
+              },
+              "github":{
+                 "items":[
+                    {
+                       "string_user_id": (githubProfile)? githubProfile : "",
+                    }
+                 ]
+              },
+              "stackoverflow":{
+                 "items":[
+                    {
+                        "string_user_id": (stackoverflowProfile)? stackoverflowProfile : "",
+                    }
+                 ]
+              }
            }
         }
-    }`);
-    console.log(JSON.stringify(payload));
+    }    
+    if(language){
+        payload.language = language;
+    }
+    if(description){
+        payload.description = description;
+    }
+    if(bio){
+        payload.data.bio = bio;
+    }
+    if(position){
+        payload.data.position = position;
+    }
+    if(organization){
+        payload.data.org = organization;
+    }
+    if(fullName){
+        payload.data.full_name = fullName;
+    }
+    if(displayName){
+        payload.data.display_name = displayName;
+    }
+    if(website){
+        payload.data.website = website;
+    }
+    if(city){
+        payload.data.location = {};
+        payload.data.location.city = city;
+    }
+    if(tags){
+        payload.data.tags = tags;
+    }
+
     return payload;
 }
 
