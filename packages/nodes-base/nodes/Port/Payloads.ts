@@ -1,6 +1,3 @@
-import { id } from "rhea";
-import { addAdditionalFields } from "../Telegram/GenericFunctions";
-
 export function searchMemberPayload(tenantUri : string, dataSource: string, member: string) {
     return {
         "filters": [
@@ -39,38 +36,21 @@ export function searchMemberPayload(tenantUri : string, dataSource: string, memb
         }
     };
 }
-//@TODO refactor
+
 export function getAllMembersPayload(tenantUri: string, 
                                      page: number, 
                                      pageSize: number, 
                                      communityStatus: number[], 
                                      engagementRating?: string[]){
 
-    let engagementRatingString;
-    if(typeof engagementRating !== 'undefined'){
-        engagementRatingString = `
-        ,
-        {
-            "field": "data.scores.engagement.rating",
-            "op":"strin",
-            "args": {
-                "values" : [
-                    ${'"' + engagementRating.join('","') + '"'}
-                ]
-            }
-        }`; 
-    }else{
-        engagementRatingString = '';
-    }
-
-    return JSON.parse(`{
+    let payload:any = {
         "filters": [
             {
                 "field": "firstsegmenturi",
                 "op": "eq",
                 "args": {
                     "values": [
-                        "${tenantUri}"
+                        tenantUri
                     ]
                 }
             },
@@ -87,18 +67,28 @@ export function getAllMembersPayload(tenantUri: string,
                 "field": "data.additional_data.community_status",
                 "op": "intin",
                 "args": {
-                    "values" : [${communityStatus}]
+                    "values" : communityStatus,
                 }
-            }
-            ${engagementRatingString}                
+            }         
         ],
         "paging": {
-            "page": ${page},
-            "pagesize": ${pageSize}
+            "page": page,
+            "pagesize": pageSize
         }
-    }`);
-}
+    };
 
+    if(engagementRating){
+        payload.filters.push({
+            "field": "data.scores.engagement.rating",
+            "op":"strin",
+            "args": {
+                "values" : engagementRating,
+            }            
+        });
+    };   
+                                        
+    return payload;
+}
 
 export function createMemberPayload(memberUri: string, additionalFields: any){    
 
