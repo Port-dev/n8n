@@ -1,0 +1,45 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+  
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Login to Github Registry
+      run: |
+        echo $CR_PAT | docker login ghcr.io -u vinggui --password-stdin
+      env:
+        CR_PAT: ${{ secrets.CR_PAT }}
+        
+    - name: Build Docker image
+      run: |
+        docker build --tag ghcr.io/vinggui/n8n:latest -f docker/images/n8n-custom/Dockerfile .
+        docker push ghcr.io/vinggui/n8n:latest
+
+  deploy:
+    needs: build
+    
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout files
+    - uses: actions/checkout@v2
+        
+    - name: Install docker image into droplet
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        passphrase: ${{ secrets.PWD }}
+        KEY: ${{ secrets.DIGITALOCEAN_TEST_MACHINE }}
+        script: docker run -it --rm --name n8n -p 5678:5678 ghcr.io/vinggui/n8n:latest
