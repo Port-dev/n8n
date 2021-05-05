@@ -41,6 +41,6 @@ jobs:
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
-        passphrase: ${{ secrets.PWD }}
-        key: ${{ secrets.DIGITALOCEAN_TEST_MACHINE }}
+        port: ${{ secrets.PORT }}
+        key: ${{ secrets.DIGITALOCEAN_ACCESS_KEY }}
         script: docker run -it --rm --name n8n -p 5678:5678 ghcr.io/vinggui/n8n:latest
