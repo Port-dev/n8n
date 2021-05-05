@@ -43,4 +43,6 @@ jobs:
         username: ${{ secrets.USERNAME }}
         port: ${{ secrets.PORT }}
         key: ${{ secrets.DIGITALOCEAN_ACCESS_KEY }}
-        script: docker run --rm --name n8n -p 5678:5678 ghcr.io/vinggui/n8n:latest
+        script: |
+          docker stop n8n
+          docker run --rm --name n8n --detach -p 5678:5678 ghcr.io/vinggui/n8n:latest
