@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v1
     
     - name: Login to Github Registry
       run: |
@@ -24,7 +24,7 @@ jobs:
         
     - name: Build Docker image
       run: |
-        docker build --tag ghcr.io/vinggui/n8n:latest -f docker/images/n8n-custom/Dockerfile .
+        docker build -t ghcr.io/vinggui/n8n:latest docker/images/n8n-custom
     
     - name: Deploy image
       run: |
