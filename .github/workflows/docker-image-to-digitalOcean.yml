@@ -24,7 +24,7 @@ jobs:
         
     - name: Build Docker image
       run: |
-        docker build -t ghcr.io/vinggui/n8n:latest docker/images/n8n-custom
+        docker build --tag ghcr.io/vinggui/n8n:latest -f docker/images/n8n-custom/Dockerfile .
     
     - name: Deploy image
       run: |
