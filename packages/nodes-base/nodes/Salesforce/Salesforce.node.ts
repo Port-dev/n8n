@@ -112,6 +112,10 @@ import {
 	userOperations,
 } from './UserDescription';
 
+import {
+	LoggerProxy as Logger,
+} from 'n8n-workflow';
+
 export class Salesforce implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Salesforce',
@@ -292,6 +296,70 @@ export class Salesforce implements INodeType {
 					const userId = user.Id;
 					returnData.push({
 						name: userName,
+						value: userId,
+					});
+				}
+				sortOptions(returnData);
+				return returnData;
+			},
+			// Get all the users and case queues to display them to user so that he can
+			// select them easily
+			async getCaseOwners(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				const qsQueues = {
+					q: 'SELECT Queue.Id, Queue.Name FROM QueuesObject where Queue.Type=\'Queue\' and SobjectType = \'Case\'',
+				};
+				const queues = await salesforceApiRequestAllItems.call(this, 'records', 'GET', '/query', {}, qsQueues);
+				for (const queue of queues) {
+					const queueName = queue.Queue.Name;
+					const queueId = queue.Queue.Id;
+					returnData.push({
+						name: `Queue: ${queueName}`,
+						value: queueId,
+					});
+				}
+				const qsUsers = {
+					q: 'SELECT id, Name FROM User',
+				};
+				const users = await salesforceApiRequestAllItems.call(this, 'records', 'GET', '/query', {}, qsUsers);
+				const userPrefix = returnData.length > 0 ? 'User: ' : '';
+				for (const user of users) {
+					const userName = user.Name;
+					const userId = user.Id;
+					returnData.push({
+						name: userPrefix + userName,
+						value: userId,
+					});
+				}
+				sortOptions(returnData);
+				return returnData;
+			},
+			// Get all the users and lead queues to display them to user so that he can
+			// select them easily
+			async getLeadOwners(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const returnData: INodePropertyOptions[] = [];
+				const qsQueues = {
+					q: 'SELECT Queue.Id, Queue.Name FROM QueuesObject where Queue.Type=\'Queue\' and SobjectType = \'Lead\'',
+				};
+				const queues = await salesforceApiRequestAllItems.call(this, 'records', 'GET', '/query', {}, qsQueues);
+				for (const queue of queues) {
+					const queueName = queue.Queue.Name;
+					const queueId = queue.Queue.Id;
+					returnData.push({
+						name: `Queue: ${queueName}`,
+						value: queueId,
+					});
+				}
+				const qsUsers = {
+					q: 'SELECT id, Name FROM User',
+				};
+				const users = await salesforceApiRequestAllItems.call(this, 'records', 'GET', '/query', {}, qsUsers);
+				const userPrefix = returnData.length > 0 ? 'User: ' : '';
+				for (const user of users) {
+					const userName = user.Name;
+					const userId = user.Id;
+					returnData.push({
+						name: userPrefix + userName,
 						value: userId,
 					});
 				}
@@ -858,6 +926,8 @@ export class Salesforce implements INodeType {
 		const qs: IDataObject = {};
 		const resource = this.getNodeParameter('resource', 0) as string;
 		const operation = this.getNodeParameter('operation', 0) as string;
+
+		Logger.debug(`Running "Salesforce" node named "${this.getNode.name}" resource "${resource}" operation "${operation}"`);
 
 		for (let i = 0; i < items.length; i++) {
 			if (resource === 'lead') {
@@ -1918,6 +1988,15 @@ export class Salesforce implements INodeType {
 					if (additionalFields.suppliedCompany !== undefined) {
 						body.SuppliedCompany = additionalFields.suppliedCompany as string;
 					}
+					if (additionalFields.customFieldsUi) {
+						const customFields = (additionalFields.customFieldsUi as IDataObject).customFieldsValues as IDataObject[];
+						if (customFields) {
+							for (const customField of customFields) {
+								//@ts-ignore
+								body[customField.fieldId] = customField.value;
+							}
+						}
+					}
 					responseData = await salesforceApiRequest.call(this, 'POST', '/sobjects/case', body);
 				}
 				//https://developer.salesforce.com/docs/api-explorer/sobject/Case/patch-case-id
@@ -1969,6 +2048,15 @@ export class Salesforce implements INodeType {
 					}
 					if (updateFields.suppliedCompany !== undefined) {
 						body.SuppliedCompany = updateFields.suppliedCompany as string;
+					}
+					if (updateFields.customFieldsUi) {
+						const customFields = (updateFields.customFieldsUi as IDataObject).customFieldsValues as IDataObject[];
+						if (customFields) {
+							for (const customField of customFields) {
+								//@ts-ignore
+								body[customField.fieldId] = customField.value;
+							}
+						}
 					}
 					responseData = await salesforceApiRequest.call(this, 'PATCH', `/sobjects/case/${caseId}`, body);
 				}
